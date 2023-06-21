@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Enrollment Form</title>
+    <script src="jpdb-commons.js"></script>
+    <script>
+        // Function to save the data in the database
+        function saveData() {
+            // Get the form values
+            var rollNo = document.getElementById("rollNo").value;
+            var fullName = document.getElementById("fullName").value;
+            var studentClass = document.getElementById("studentClass").value;
+            var birthDate = document.getElementById("birthDate").value;
+            var address = document.getElementById("address").value;
+            var enrollmentDate = document.getElementById("enrollmentDate").value;
+            
+            // Perform validation
+            if (rollNo === "" || fullName === "" || studentClass === "" || birthDate === "" || address === "" || enrollmentDate === "") {
+                alert("Please fill in all fields.");
+                return;
+            }
+            
+            // Perform database operations here using the provided jpdb-commons.js methods
+            // Use the createGETRequest, createPUTRequest, and executeCommand functions
+            
+            // Example: Create a PUT request to store the data in the database
+            var putRequest = createPUTRequest("connectionToken", "SCHOOL-DB", "STUDENT-TABLE", rollNo, {
+                "Roll-No": rollNo,
+                "Full-Name": fullName,
+                "Class": studentClass,
+                "Birth-Date": birthDate,
+                "Address": address,
+                "Enrollment-Date": enrollmentDate
+            });
+            
+            // Execute the PUT request to store the data
+            executeCommand(putRequest);
+            
+            // Reset the form
+            resetForm();
+        }
+        
+        // Function to reset the form
+        function resetForm() {
+            document.getElementById("enrollmentForm").reset();
+            document.getElementById("rollNo").disabled = false;
+            document.getElementById("saveButton").disabled = false;
+            document.getElementById("updateButton").disabled = true;
+        }
+        
+        // Function to load data for a given roll number
+        function loadData() {
+            var rollNo = document.getElementById("rollNo").value;
+            
+            // Perform database operations here to load data for the given roll number
+            // Use the createGETRequest and executeCommand functions
+            
+            // Example: Create a GET request to retrieve data for the roll number
+            var getRequest = createGETRequest("connectionToken", "SCHOOL-DB", "STUDENT-TABLE", rollNo);
+            
+            // Execute the GET request to retrieve data
+            var response = executeCommand(getRequest);
+            
+            // Check if the data exists
+            if (response && response.length > 0) {
+                // Populate the form fields with the retrieved data
+                var data = response[0]; // Assuming only one record is retrieved
+                document.getElementById("rollNo").disabled = true;
+                document.getElementById("saveButton").disabled = true;
+                document.getElementById("updateButton").disabled = false;
+                document.getElementById("fullName").value = data["Full-Name"];
+                document.getElementById("studentClass").value = data["Class"];
+                document.getElementById("birthDate").value = data["Birth-Date"];
+                document.getElementById("address").value = data["Address"];
+                document.getElementById("enrollmentDate").value = data["Enrollment-Date"];
+            } else {
+                // Data not found, reset the form
+                resetForm();
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Student Enrollment Form</h1>
+    <form
